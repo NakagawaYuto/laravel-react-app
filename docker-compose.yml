@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   backend:
+    container_name: backend-container
     build:
       context: .
       dockerfile: ./infra/docker/php/Dockerfile
@@ -16,6 +17,7 @@ services:
       - DB_PASSWORD=${DB_PASS:-secret}
 
   web:
+    container_name: nginx-container
     build:
       context: .
       dockerfile: ./infra/docker/nginx/Dockerfile
@@ -27,6 +29,7 @@ services:
       - ./backend:/code/backend
 
   db:
+    container_name: mysql-container
     build:
       context: .
       dockerfile: ./infra/docker/mysql/Dockerfile
@@ -37,7 +40,24 @@ services:
       - MYSQL_USER=${DB_USER:-phper}
       - MYSQL_PASSWORD=${DB_PASS:-secret}
       - MYSQL_ROOT_PASSWORD=${DB_PASS:-secret}
+  
+  frontend:
+    # tty: true
+    container_name: react-container
+    build:
+      context: .
+      dockerfile: ./infra/docker/react/Dockerfile
+    restart: always
+    volumes:
+      - ./frontend:/code/frontend
+      - node_modules:/code/frontend/node_modules
+
+    command: sh -c "cd frontend && npm install &&WATCHPACK_POLLING=true npm start"
+    ports:
+      - "3000:3000"
+
 
 volumes:
   php-fpm-socket:
   db-store:
+  node_modules:
