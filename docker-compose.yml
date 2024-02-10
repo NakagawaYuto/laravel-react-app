@@ -1,12 +1,12 @@
-version: "3.8"
+version: "3.9"
 services:
-  app:
+  backend:
     build:
       context: .
       dockerfile: ./infra/docker/php/Dockerfile
     volumes:
       - php-fpm-socket:/var/run/php-fpm
-      - ./backend:/work/backend
+      - ./backend:/code/backend
     environment:
       - DB_CONNECTION=mysql
       - DB_HOST=db
@@ -24,7 +24,7 @@ services:
       - 5173:5173
     volumes:
       - php-fpm-socket:/var/run/php-fpm
-      - ./backend:/work/backend
+      - ./backend:/code/backend
 
   db:
     build:
